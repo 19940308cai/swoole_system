@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>门店面板</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../static/css/public.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <style>
+        #message-box {
+            /* 父容器设置宽度, 并超出部分不显示 */
+            height: 350px;
+            overflow: hidden;
+        }
+
+        #message-box > div {
+            /* 子容器比父容器的宽度多 17 px, 经测正好是滚动条的默认宽度 */
+            height: 350px;
+            line-height: 20px;
+            overflow-y: scroll;
+        }
+
+        .warp {
+            height: 350px;
+        }
+
+        .warp2 {
+            height: 150px;
+        }
+
+        .no-padding {
+            padding: 0px;
+            padding-right: 6px;
+        }
+
+        .warp3 {
+            height: 250px;
+        }
+        .dis-hide{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <div class="col-md-8 message-model model-hide">
+        <div class="panel panel-default">
+            <div class="panel-heading">门店客服工作台</div>
+            <div class="panel-body">
+
+                <div class="row message-box dis-hide">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">聊天记录</div>
+                            <div class="panel-body" id="message-box">
+                                <div>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">客户订单</div>
+                            <div class="panel-body warp">
+                                无..
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">商品信息</div>
+                            <div class="panel-body warp">
+                                无..
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row produt-box">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">商品管理</div>
+                            <div class="panel-body warp">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">商品名称:</label>
+                                        <input type="text" maxlength="10" name="product-name" class="form-control"
+                                               id="exampleInputEmail1" placeholder="请输入名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">商品数量:</label>
+                                        <input type="text" maxlength="3" name="product-num" class="form-control"
+                                               id="exampleInputPassword1" placeholder="请输入数量">
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-right">
+                                    <button type="submit" class="btn btn-info" id="product-btn">添加</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">商品列表</div>
+                            <div class="panel-body warp">
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td>PHP权威指南</td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn btn-info btn-xs">编辑</button>
+                                            <button type="button" class="btn btn-danger btn-xs">删除</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default" style="margin-bottom: 0px;">
+                            <div class="panel-heading">
+                                聊天框 <a href="javascript:;" class="remove-message dis-hide">取消与蔡江聊天</a>
+                            </div>
+                            <div class="panel-body warp2">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <textarea style="height: 120px;" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-md-2 no-padding">
+                                        <a style="display: inline-block;height: 120px;background: deepskyblue;font-size: 14px;font-weight: bold;line-height: 120px;width: 100%;text-align: center;border-radius: 20%;"
+                                           href="javascript:;">发送</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">门店客服工作台</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">客户</div>
+                            <div class="panel-body warp3">
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td>蔡江</td>
+                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="javascript:;" class="call" data-type="customer" >沟通(100)</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-default" style="margin-bottom: 0px;">
+                            <div class="panel-heading">平台门店客服</div>
+                            <div class="panel-body warp3">
+                                <table class="table">
+                                    <tbody>
+                                    <tr>
+                                        <td>蔡江</td>
+                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="javascript:;" class="call" data-type="service" >沟通(100)</a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function(){
+
+        $('.call').on('click',function(){
+            $('.message-box').removeClass("dis-hide");
+            $('.produt-box').addClass("dis-hide");
+            $('.remove-message').removeClass("dis-hide");
+        })
+
+        $('.remove-message').on('click',function () {
+            $('.message-box').addClass("dis-hide");
+            $(this).addClass("dis-hide");
+            $('.produt-box').removeClass("dis-hide");
+        })
+
+
+        function edit_product(product){
+            if(!product.product_name || parseInt(product.product_num) <= 0){
+                return false;
+            }
+            product.token = localStorage.getItem("token");
+            $.ajax({
+                url: "http://www.swoole_client.com:8088/product/edit",
+                type: "post",
+                data: product,
+                success: function (data) {
+                    if(data.code == 200){
+                        alert("添加成功");
+                    }
+                }
+            });
+        }
+
+
+        $('#product-btn').on('click',function(){
+            product = {};
+            product.product_name = $("input[name='product-name']").val();
+            product.product_num = $("input[name='product-num']").val();
+            edit_product(product);
+        })
+
+
+    })
+</script>
+
+
+</body>
+</html>

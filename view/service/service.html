@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>平台客服面板</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../static/css/public.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <style>
+        #message-box {
+            /* 父容器设置宽度, 并超出部分不显示 */
+            height: 350px;
+            overflow: hidden;
+        }
+        #message-box > div {
+            /* 子容器比父容器的宽度多 17 px, 经测正好是滚动条的默认宽度 */
+            height: 350px;
+            line-height: 20px;
+            overflow-y: scroll;
+        }
+        .warp{
+            height: 350px;
+        }
+        .warp2{
+            height: 150px;
+        }
+        .no-padding{
+            padding: 0px;
+            padding-right: 6px;
+        }
+        .warp3{
+            height: 250px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <div class="col-md-8 message-model model-hide">
+        <div class="panel panel-default">
+            <div class="panel-heading">平台门店客服工作台</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">聊天记录</div>
+                            <div class="panel-body" id="message-box">
+                                <div>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">客户订单</div>
+                            <div class="panel-body warp">
+                                无..
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">门店信息</div>
+                            <div class="panel-body warp">
+                                无..
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default" style="margin-bottom: 0px;">
+                            <div class="panel-heading">聊天框</div>
+                            <div class="panel-body warp2">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <textarea style="height: 120px;" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-md-2 no-padding">
+                                        <a style="display: inline-block;height: 120px;background: deepskyblue;font-size: 14px;font-weight: bold;line-height: 120px;width: 100%;text-align: center;border-radius: 20%;" href="javascript:;">发送</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 message-model model-hide">
+        <div class="panel panel-default">
+            <div class="panel-heading">平台门店客服工作台</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default" >
+                            <div class="panel-heading">门店客户</div>
+                            <div class="panel-body warp3">
+                                无..
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-default" style="margin-bottom: 0px;">
+                            <div class="panel-heading">门店客服</div>
+                            <div class="panel-body warp3">
+                                无..
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+</html>
