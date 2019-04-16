@@ -65,8 +65,8 @@ if (isset($command_params['s'])) {
         die("{$command_params['s']} is not allow server...\n");
     }
     //工厂出类名称
-    $websocketFactory = new \server\WebsocketFactory();
-    $class_name = $websocketFactory->WebSocketFactory($command_params['r']);
+    $websocketFactory = new \server\WebsocketFactoryClass();
+    $class_name = $websocketFactory->WebSocketFactoryClass($command_params['r']);
     if (null == $class_name) {
         die("run {$command_params['s']} {$command_params['r']} is faild! error...\n");
     }

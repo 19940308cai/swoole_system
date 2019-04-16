@@ -8,7 +8,7 @@
 namespace server;
 
 
-class WebsocketFactory{
+class WebsocketFactoryClass{
 
 
     public function WebSocketFactory($role)
