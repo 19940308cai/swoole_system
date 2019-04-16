@@ -39,6 +39,11 @@ class WebsocketServer
     public function start()
     {
         file_put_contents(LOG_PATH . '/' . $this->file_name . '.run', "1");
+        swoole_timer_tick(1000, function(){
+            $redis = new \Redis();
+            $redis->connect("127.0.0.1", "6379");
+            $redis->publish("nodePool", json_encode(["address" => "127.0.0.1:9093"]));
+        });
         echo 'run ' . __CLASS__ . " success\n";
     }
 

@@ -42,7 +42,8 @@
         .warp3 {
             height: 250px;
         }
-        .dis-hide{
+
+        .dis-hide {
             display: none;
         }
     </style>
@@ -122,14 +123,8 @@
                             <div class="panel-heading">商品列表</div>
                             <div class="panel-body warp">
                                 <table class="table">
-                                    <tbody>
-                                    <tr>
-                                        <td>PHP权威指南</td>
-                                        <td class="text-right">
-                                            <button type="button" class="btn btn-info btn-xs">编辑</button>
-                                            <button type="button" class="btn btn-danger btn-xs">删除</button>
-                                        </td>
-                                    </tr>
+                                    <tbody id="product-tbody">
+
                                     </tbody>
                                 </table>
                             </div>
@@ -175,7 +170,8 @@
                                     <tbody>
                                     <tr>
                                         <td>蔡江</td>
-                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="javascript:;" class="call" data-type="customer" >沟通(100)</a></td>
+                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a
+                                                href="javascript:;" class="call" data-type="customer">沟通(100)</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -190,7 +186,8 @@
                                     <tbody>
                                     <tr>
                                         <td>蔡江</td>
-                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="javascript:;" class="call" data-type="service" >沟通(100)</a></td>
+                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a
+                                                href="javascript:;" class="call" data-type="service">沟通(100)</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -205,23 +202,23 @@
 </div>
 
 <script>
-    $(function(){
+    $(function () {
 
-        $('.call').on('click',function(){
+        $('.call').on('click', function () {
             $('.message-box').removeClass("dis-hide");
             $('.produt-box').addClass("dis-hide");
             $('.remove-message').removeClass("dis-hide");
         })
 
-        $('.remove-message').on('click',function () {
+        $('.remove-message').on('click', function () {
             $('.message-box').addClass("dis-hide");
             $(this).addClass("dis-hide");
             $('.produt-box').removeClass("dis-hide");
         })
 
 
-        function edit_product(product){
-            if(!product.product_name || parseInt(product.product_num) <= 0){
+        function edit_product(product) {
+            if (!product.product_name || parseInt(product.product_num) <= 0) {
                 return false;
             }
             product.token = localStorage.getItem("token");
@@ -230,19 +227,68 @@
                 type: "post",
                 data: product,
                 success: function (data) {
-                    if(data.code == 200){
-                        alert("添加成功");
+                    if (data.code == 200) {
+                        getProduct(1, 10, localStorage.getItem("token"))
                     }
                 }
             });
         }
 
 
-        $('#product-btn').on('click',function(){
+        function getProduct(page, limit, token) {
+            $('#product-tbody').html("");
+            var params = {page: page, limit: limit, store_token: token, token: token}
+            $.ajax({
+                url: "http://www.swoole_client.com:8088/product/getProduct",
+                type: "get",
+                data: params,
+                success: function (data) {
+                    if (data.code == 200) {
+                        if (parseInt(data.data.pager.count) <= 0) {
+                            return false;
+                        } else {
+                            html = "";
+                            for (product in data.data.products) {
+                                product_object = JSON.parse(data.data.products[product]);
+                                html += "<tr>\n" +
+                                    "                                <td>" + product_object.product_name + "</td>\n" +
+                                    "                                <td class=\"text-right\">\n" +
+                                    "                                    <button type=\"button\" data-value='" + data.data.products[product] + "' data-type='" + product + "' class=\"btn btn-info btn-xs edit\">编辑</button>\n" +
+                                    // "                                    <button type=\"button\" class=\"btn btn-danger btn-xs\">删除</button>\n" +
+                                    "                                </td>\n" +
+                                    "                            </tr>";
+
+                            }
+                            $('#product-tbody').append(html);
+                        }
+                    }
+                }
+            });
+        }
+
+        getProduct(1, 10, localStorage.getItem("token"))
+
+        $('#product-tbody').on('click', '.edit', function (evt) {
+            $('#product-btn').removeAttr('data-value');
+            var product_msg = JSON.parse($(evt.target).attr('data-value'));
+            $("input[name='product-name']").val(product_msg.product_name);
+            $("input[name='product-num']").val(product_msg.product_num);
+            $('#product-btn').attr('data-value', $(evt.target).attr('data-type'));
+        })
+
+
+        $('#product-btn').on('click', function () {
             product = {};
             product.product_name = $("input[name='product-name']").val();
             product.product_num = $("input[name='product-num']").val();
+            var id = $(this).attr('data-value');
+            if (id) {
+                product.product_id = id;
+            }
             edit_product(product);
+            $("input[name='product-name']").val("");
+            $("input[name='product-num']").val("");
+            $(this).removeAttr('data-value');
         })
 
 

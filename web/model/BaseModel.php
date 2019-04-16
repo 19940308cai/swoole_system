@@ -32,11 +32,16 @@ class BaseModel
      */
     protected function multiCommand($listen_key, \Closure $callback)
     {
-        $this->db->watch($listen_key);
-        $this->db->multi(\Redis::PIPELINE);
-        $callback();
-        $exec_result = $this->db->exec();
-        return $exec_result;
+//        $this->db->watch($listen_key);
+        try{
+            $this->db->multi(\Redis::PIPELINE);
+            $callback();
+            $exec_result = $this->db->exec();
+            return $exec_result;
+        }catch (\Exception $e){
+            $this->db->discard();
+            return false;
+        }
     }
 
     /**

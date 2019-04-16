@@ -13,7 +13,7 @@ define("VIEW_PATH", ROOT_PATH . DIRECTORY_SEPARATOR . "view");
 define("SERVER_PATH", ROOT_PATH . DIRECTORY_SEPARATOR . "server");
 define("PID_PATH", ROOT_PATH . DIRECTORY_SEPARATOR . "pid");
 define("LOG_PATH", ROOT_PATH . DIRECTORY_SEPARATOR . "log");
-
+define("VENDOR_PATH", ROOT_PATH . DIRECTORY_SEPARATOR . "vendor");
 
 
 define("START", "start");

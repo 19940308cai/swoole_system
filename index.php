@@ -11,6 +11,7 @@ define("ROOT_PATH", __DIR__);
 
 require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR . "constant.php";
 require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once VENDOR_PATH . DIRECTORY_SEPARATOR . "autoload.php";
 
 $app = new \core\App();
 $app->runMvc();
