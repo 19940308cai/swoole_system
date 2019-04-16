@@ -13,43 +13,31 @@ use web\model\ProductModel;
 
 class ProductService{
 
-    const PRODUCT_CACHE_STORE = "PRODUCT:CACHE:STORE:";
 
-    const PRODUCT_CACHE_STORE_SCORE = "PRODUCT:CACHE:STORE:SCORE:";
-
-    const PRODUCT_INDEX_CACHE_STORE = "PRODUCT:INDEX:CACHE:STORE:";
-
-    const PRODUCT_CACHE_ALL = "PRODUCT:CACHE:STORE:ALL";
-
-    const PRODUCT_INDEX_CACHE_STORE_ALL = "PRODUCT:INDEX:CACHE:STORE_ALL";
-
-
-    public function editProduct($product_name, $product_num, $store_token, $product_id=null)
+    public function editProduct($product_name, $product_num, $uid, $product_id=null)
     {
         $mProductModel = new ProductModel();
-        $auth = $mProductModel->checkStoreAuth($store_token);
+        $auth = $mProductModel->checkStoreAuth($uid);
         if(false === $auth) throw new \Exception("no auth");
-        return $mProductModel->editProduct($product_name, $product_num, $store_token, $product_id);
+        return $mProductModel->ProductProcess($product_name, $product_num, $uid, $product_id);
     }
 
 
-    public function getProduct($page, $limit, $store_token=null)
+    public function getProduct($page, $limit, $uid=null)
     {
         $productWarp = [
             "pager" => null,
             "products" => null,
         ];
-        if($page <= 0){
-            $page = 1;
-        }
+        if($page <= 0) $page = 1;
         $mProductModel = new ProductModel();
-        if($store_token){
-            $auth = $mProductModel->checkStoreAuth($store_token);
+        if($uid){
+            $auth = $mProductModel->checkStoreAuth($uid);
             if(false === $auth) throw new \Exception("no auth see store product");
-            $store_count = $mProductModel->getProductCountByStoreToken($store_token);
+            $store_count = $mProductModel->getStoreProductCount($uid);
             $pager = new Pager((string)$store_count, $page, $limit);
             $pager->getpagelist();
-            $products = $mProductModel->getProductSliceByStoreToken($store_token, $pager->offset, $pager->limit);
+            $products = $mProductModel->getStoreProductSlice($uid, $pager->offset, $pager->limit);
             $productWarp["pager"] = $pager;
             $productWarp["products"] = $products;
         }

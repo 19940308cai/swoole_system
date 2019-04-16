@@ -228,16 +228,16 @@
                 data: product,
                 success: function (data) {
                     if (data.code == 200) {
-                        getProduct(1, 10, localStorage.getItem("token"))
+                        getProduct(1, 10, localStorage.getItem("uid"))
                     }
                 }
             });
         }
 
 
-        function getProduct(page, limit, token) {
+        function getProduct(page, limit, uid) {
             $('#product-tbody').html("");
-            var params = {page: page, limit: limit, store_token: token, token: token}
+            var params = {page: page, limit: limit, uid: uid}
             $.ajax({
                 url: "http://www.swoole_client.com:8088/product/getProduct",
                 type: "get",
@@ -266,7 +266,7 @@
             });
         }
 
-        getProduct(1, 10, localStorage.getItem("token"))
+        getProduct(1, 10, localStorage.getItem("uid"))
 
         $('#product-tbody').on('click', '.edit', function (evt) {
             $('#product-btn').removeAttr('data-value');

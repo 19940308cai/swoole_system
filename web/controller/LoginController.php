@@ -23,11 +23,11 @@ class LoginController extends BaseController
                 throw new \Exception("params error");
             }
             $slogin = new LoginService();
-            $token = $slogin->register($user_type, $this->request->getRemoteAddr());
-            if(false == $token){
+            $uid = $slogin->register($user_type, $this->request->getRemoteAddr());
+            if(false == $uid){
                 return $this->response->json(500, self::$error, "register error");
             }else{
-                return $this->response->json(200, self::$success, ["token" => $token]);
+                return $this->response->json(200, self::$success, ["uid" => $uid]);
             }
         } catch (\Exception $e) {
             return $this->response->json(500, self::$error, $e->getMessage());

@@ -11,17 +11,30 @@ namespace web\model;
 class LoginModel extends BaseModel
 {
 
+    const AES_LEY = "caijiangcaijiang";
+
+    const LOGIN_STORE_CACHE = "LOGIN_CACHE:STORE";
+
+    const LOGIN_CUSTOMER_CACHE = "LOGIN_CACHE:CUSTOMER";
+
+    const LOGIN_PROVIDER_CACHE = "LOGIN_CACHE:PROVIDER";
+
     const CUSTOMER = "customer";
 
     const PROVIDER = "provider";
 
     const STORE = "store";
 
-    public function register($cache_key, $token)
+    /**
+     * @param $cache_key
+     * @param $uid
+     * @return bool
+     */
+    public function register($cache_key, $uid)
     {
-        $this->multiCommand($cache_key, function () use ($cache_key, $token) {
-            $this->sadd($cache_key, $token);
-            $this->expire($cache_key, 1 * self::DAY_SECONS);
+        $this->multiCommand($cache_key, function () use ($cache_key, $uid) {
+            $this->db->sadd($cache_key, $uid);
+            $this->db->expire($cache_key, self::DAY_SECONS);
         });
         return true;
     }

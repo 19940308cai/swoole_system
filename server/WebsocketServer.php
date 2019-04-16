@@ -17,7 +17,7 @@ class WebsocketServer
 
     public function __construct()
     {
-        $this->websocket = new \Swoole\WebSocket\Server("0.0.0.0", "9093");
+        $this->websocket = new \Swoole\WebSocket\Server("127.0.0.1", "9093");
 
         $this->file_name = str_replace('\\', '_', self::class);
 
@@ -38,7 +38,7 @@ class WebsocketServer
 
     public function start()
     {
-        file_put_contents(LOG_PATH . '/' . $this->file_name . '.run', "1");
+        file_put_contents(LOG_PATH . '/' . $this->file_name . '.run', "is run");
         swoole_timer_tick(1000, function(){
             $redis = new \Redis();
             $redis->connect("127.0.0.1", "6379");

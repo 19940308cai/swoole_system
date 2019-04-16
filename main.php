@@ -44,6 +44,7 @@ if (count($command_params) == 0 || isset($command_params['h'])) {
     die($help_text);
 }
 
+//todo 需要补充启动所有结点服务器
 if (isset($command_params['s'])) {
     if (!in_array($command_params['a'], $action_options)) {
         die($help_text);
@@ -64,6 +65,8 @@ if (isset($command_params['s'])) {
         while (true) {
             if (file_exists(LOG_PATH . '/' . str_replace('\\', '_', $allow_run_server[$command_params['s']]) . '.run')) {
                 die("run {$command_params['s']} success...\n");
+            }else{
+                die("run {$command_params['s']} error...\n");
             }
         }
     }
@@ -102,11 +105,13 @@ function stop_server($alisa_server_name, $server_name, $allow_run_server)
     if ($pid) {
         exec("kill -TERM {$pid} 2>/dev/null");
         sleep(1);
-        if (file_exists(LOG_PATH . '/' . $file_name . '.run')) {
-            @unlink(LOG_PATH . '/' . $file_name . '.run');
+        $run_path = LOG_PATH . '/' . $file_name . '.run';
+        $log_path = LOG_PATH . '/' . $file_name . '.log';
+        if (file_exists($run_path)) {
+            @unlink($run_path);
         }
-        if (file_exists(LOG_PATH . '/' . $file_name . '.log')) {
-            @unlink(LOG_PATH . '/' . $file_name . '.log');
+        if (file_exists($log_path)) {
+            @unlink($log_path);
         }
         $process_isset = exec("ps -ef | grep {$pid} | grep -v grep");
         if ($process_isset) {

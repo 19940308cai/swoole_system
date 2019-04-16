@@ -15,15 +15,6 @@ use web\model\LoginModel;
 class LoginService
 {
 
-    const AES_LEY = "caijiangcaijiang";
-
-    const LOGIN_STORE_CACHE = "LOGIN_CACHE:STORE";
-
-    const LOGIN_CUSTOMER_CACHE = "LOGIN_CACHE:CUSTOMER";
-
-    const LOGIN_PROVIDER_CACHE = "LOGIN_CACHE:PROVIDER";
-
-
     /**
      * 注册
      * @param $user_type
@@ -36,29 +27,34 @@ class LoginService
         $mlogin = new LoginModel();
         switch ($user_type) {
             case LoginModel::CUSTOMER:
-                $cache_key = self::LOGIN_CUSTOMER_CACHE;
+                $cache_key = LoginModel::LOGIN_CUSTOMER_CACHE;
                 break;
             case LoginModel::PROVIDER:
-                $cache_key = self::LOGIN_PROVIDER_CACHE;
+                $cache_key = LoginModel::LOGIN_PROVIDER_CACHE;
                 break;
             case LoginModel::STORE:
-                $cache_key = self::LOGIN_STORE_CACHE;
+                $cache_key = LoginModel::LOGIN_STORE_CACHE;
                 break;
         }
         $Aes = new Aes();
-        $token = $Aes->AESEncryptRequest(self::AES_LEY, json_encode(["ip" => $remote_addr, "user_type" => $user_type], 320));
-        return $mlogin->register($cache_key, $token) ? $token : false;
+        //$uid - 当做用户标示
+        $uid = $Aes->AESEncryptRequest(LoginModel::AES_LEY,
+            json_encode([
+                "ip" => $remote_addr,
+                "user_type" => $user_type], 320)
+        );
+        return $mlogin->register($cache_key, $uid) ? $uid : false;
     }
 
     /**
      * 解密
-     * @param $token
+     * @param $uid - 用户唯一标示
      * @return bool
      */
-    public function checkAuth($token)
+    public function checkAuth($uid)
     {
         $Aes = new Aes();
-        $token_json = $Aes->AESDecryptResponse(self::AES_LEY, $token);
+        $token_json = $Aes->AESDecryptResponse(LoginModel::AES_LEY, $uid);
         return $token_json ? json_decode($token_json, true) : false;
     }
 

@@ -24,24 +24,23 @@ class BaseController
 
     protected $response;
 
-    protected $token;
+    protected $uid;
 
     public function __construct($request, $response)
     {
         $this->request = $request;
         $this->response = $response;
+        $this->uid = $this->request->get("uid");
         if (!in_array($this->request->getRequestUri(), self::$allow_uri)) {
-            $token = $this->request->get("token");
-            if (null === $token) {
-                exit("no token");
+            if (null === $this->uid) {
+                exit("please register user");
             }
             $sLogin = new LoginService();
-            $token = $sLogin->checkAuth($token);
-            if(false === $token){
-                exit("faild token");
+            $result = $sLogin->checkAuth($this->uid);
+            if(false === $result){
+                exit("not found user");
             }
         }
-        $this->token = $this->request->get("token");
     }
 
 }
