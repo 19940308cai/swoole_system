@@ -5,6 +5,7 @@
  * Date: 2019/4/10
  * Time: 下午7:41
  */
+
 namespace web\controller;
 
 
@@ -19,7 +20,7 @@ class ProductController extends BaseController
      */
     public function edit()
     {
-        try{
+        try {
             $product_name = $this->request->get("product_name");
             $product_num = $this->request->get("product_num");
             $product_id = $this->request->get("product_id");
@@ -30,7 +31,7 @@ class ProductController extends BaseController
             } else {
                 return $this->response->json(500, self::$error, "");
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->response->json(500, self::$error, $e->getMessage());
         }
     }

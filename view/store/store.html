@@ -221,7 +221,7 @@
             if (!product.product_name || parseInt(product.product_num) <= 0) {
                 return false;
             }
-            product.token = localStorage.getItem("token");
+            product.uid = localStorage.getItem("uid");
             $.ajax({
                 url: "http://www.swoole_client.com:8088/product/edit",
                 type: "post",

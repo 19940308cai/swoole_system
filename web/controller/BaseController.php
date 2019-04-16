@@ -38,7 +38,7 @@ class BaseController
             $sLogin = new LoginService();
             $result = $sLogin->checkAuth($this->uid);
             if(false === $result){
-                exit("not found user");
+                exit("faild user");
             }
         }
     }

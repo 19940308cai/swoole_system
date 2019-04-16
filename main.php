@@ -10,14 +10,15 @@ define("ROOT_PATH", __DIR__);
 require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR . "constant.php";
 require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR . "autoload.php";
 
-$command = ["h:", "s:", "a:"];
+$command = ["h:", "s:", "a:", "r:"];
 $action_options = [START, STOP, RELOAD];
 $command_params = getopt(implode("", $command));
-
-
+//允许运行的服务器
 $allow_run_server = [
     "websocket" => \server\WebsocketServer::class,
 ];
+//角色服务器名单
+$role_list = ["c", "p", "s"];
 
 $php_bin = exec("which php");
 
@@ -25,6 +26,7 @@ $help_text = <<<HELP
 command items 
 h - 帮助命令
 s - 服务器名称
+r - 服务器角色
 a - 服务器动作
 
 command options
@@ -33,6 +35,10 @@ h:
 s:
     1.websocket
     .....
+r: 
+    1.c
+    2.s
+    3.p 
 a:
     1.start
     2.stop
@@ -46,35 +52,48 @@ if (count($command_params) == 0 || isset($command_params['h'])) {
 
 //todo 需要补充启动所有结点服务器
 if (isset($command_params['s'])) {
+    if (!isset($command_params['a']) || !isset($command_params['r'])) {
+        die($help_text);
+    }
     if (!in_array($command_params['a'], $action_options)) {
         die($help_text);
+    }
+    if (!in_array($command_params['r'], $role_list)) {
+        die("{$command_params['r']} is not allow role...\n");
     }
     if (!array_key_exists($command_params['s'], $allow_run_server)) {
         die("{$command_params['s']} is not allow server...\n");
     }
+    //工厂出类名称
+    $websocketFactory = new \server\WebsocketFactory();
+    $class_name = $websocketFactory->WebSocketFactory($command_params['r']);
+    if (null == $class_name) {
+        die("run {$command_params['s']} {$command_params['r']} is faild! error...\n");
+    }
+
     if ($command_params['a'] == START) {
         start_server($command_params['s'], $allow_run_server[$command_params['s']]);
-        $process = new swoole_process(function () use ($allow_run_server, $command_params) {
+        $process = new swoole_process(function () use ($class_name, $allow_run_server, $command_params) {
             require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR . "autoload.php";
-            $server = new $allow_run_server[$command_params['s']]();
+            $server = new $class_name();
             $server->run();
         }, true);
         $process->start();
-        //echo $process->read();
+//        $read = $process->read();
         swoole_process::wait();
         while (true) {
-            if (file_exists(LOG_PATH . '/' . str_replace('\\', '_', $allow_run_server[$command_params['s']]) . '.run')) {
+            if (file_exists(LOG_PATH . '/' . str_replace('\\', '_', $class_name) . '.run')) {
                 die("run {$command_params['s']} success...\n");
-            }else{
+            } else {
                 die("run {$command_params['s']} error...\n");
             }
         }
     }
     if ($command_params['a'] == STOP) {
-        die(stop_server($command_params['s'], $allow_run_server[$command_params['s']], $allow_run_server));
+        die(stop_server($command_params['s'], $allow_run_server[$command_params['s']], $class_name));
     }
     if ($command_params['a'] == RELOAD) {
-        die(reload_server($command_params['s'], $allow_run_server[$command_params['s']]));
+        die(reload_server($command_params['s'], $class_name));
     }
 }
 
@@ -97,10 +116,10 @@ function reload_server($alisa_server_name, $server_name)
 }
 
 
-function stop_server($alisa_server_name, $server_name, $allow_run_server)
+function stop_server($alisa_server_name, $server_name, $file_name)
 {
     echo "stop {$alisa_server_name} ing...\n";
-    $file_name = str_replace('\\', '_', $allow_run_server[$alisa_server_name]);
+    $file_name = str_replace('\\', '_', $file_name);
     $pid = see_pid($file_name);
     if ($pid) {
         exec("kill -TERM {$pid} 2>/dev/null");

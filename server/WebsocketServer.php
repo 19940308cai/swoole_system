@@ -8,18 +8,18 @@
 
 namespace server;
 
-class WebsocketServer
+abstract class WebsocketServer
 {
 
-    private $websocket;
+    protected $websocket;
 
-    private $file_name;
+    protected $file_name;
 
-    public function __construct()
+    public function __construct($child_class, $ip, $port)
     {
-        $this->websocket = new \Swoole\WebSocket\Server("127.0.0.1", "9093");
+        $this->websocket = new \Swoole\WebSocket\Server($ip, $port);
 
-        $this->file_name = str_replace('\\', '_', self::class);
+        $this->file_name = str_replace('\\', '_', $child_class);
 
         $this->websocket->set([
             'task_worker_num' => 1,
@@ -38,49 +38,33 @@ class WebsocketServer
 
     public function start()
     {
-        file_put_contents(LOG_PATH . '/' . $this->file_name . '.run', "is run");
-        swoole_timer_tick(1000, function(){
-            $redis = new \Redis();
-            $redis->connect("127.0.0.1", "6379");
-            $redis->publish("nodePool", json_encode(["address" => "127.0.0.1:9093"]));
-        });
-        echo 'run ' . __CLASS__ . " success\n";
     }
 
     public function open()
     {
-
     }
-
 
     public function message()
     {
-
     }
-
 
     public function request()
     {
-
     }
 
     public function close()
     {
-
     }
 
     public function task()
     {
-
     }
 
     public function finish()
     {
-
     }
 
     public function run()
     {
-        $this->websocket->start();
     }
 }

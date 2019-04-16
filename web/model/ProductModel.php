@@ -8,9 +8,6 @@
 
 namespace web\model;
 
-use web\service\LoginService;
-use web\service\self;
-
 class ProductModel extends BaseModel
 {
     //门店 - 产品
@@ -57,8 +54,8 @@ class ProductModel extends BaseModel
             $product_key,
             $product_name_key
         ], function () use ($product_store_score_key, $product_score_key, $product_name_key, $product_name, $primary_key, $product_key, $store_product_key, $product) {
-            $this->db->zadd($product_store_score_key, time(), $product_key);
-            $this->db->zadd($product_score_key, time(), $product_key);
+            $this->db->zadd($product_store_score_key, time(), $primary_key);
+            $this->db->zadd($product_score_key, time(), $primary_key);
             $this->db->sadd($product_name_key, $product_name);
             $this->db->hSet($product_key, $primary_key, $product);
             $this->db->hSet($store_product_key, $primary_key, $product);
@@ -81,21 +78,23 @@ class ProductModel extends BaseModel
         $product_name_key = self::PRODUCT_NAME_CACHE_ALL;
         $product_store_score_key = self::PRODUCT_CACHE_STORE_SCORE . $uid;
         $product_score_key = self::PRODUCT_CACHE_STORE_ALL_SCORE;
+
         $new_product = json_encode(["product_name" => $product_name, "product_num" => $product_num], 320);
         $old_product = json_decode($this->db->hGet($product_key, $product_id), true);
         if (!$old_product) {
             throw new \Exception("需要修改的[{$product_name}]不存在...");
         }
-        $command_result = $this->multiCommand([], function () use ($product_score_key, $product_store_score_key, $new_product, $product_name_key, $product_name, $store_product_key, $product_key, $product_id) {
-            $this->db->sRemove($product_name_key, $product_name);
-            $this->db->hdel($store_product_key, $product_id);
-            $this->db->hdel($product_key, $product_id);
-            $this->db->sAdd($product_name_key, $product_name);
-            $this->db->hSet($store_product_key, $product_id, $new_product);
-            $this->db->hSet($product_key, $product_id, $new_product);
-            $this->db->zadd($product_store_score_key, time(), $product_key);
-            $this->db->zadd($product_score_key, time(), $product_key);
-        });
+        $command_result = $this->multiCommand([], function () use ($old_product, $product_score_key, $product_store_score_key, $new_product, $product_name_key, $product_name, $store_product_key, $product_key, $product_id) {
+        $this->db->sRemove($product_name_key, $old_product["product_name"]);
+        $this->db->hdel($store_product_key, $product_id);
+        $this->db->hdel($product_key, $product_id);
+
+        $this->db->sAdd($product_name_key, $product_name);
+        $this->db->hSet($store_product_key, $product_id, $new_product);
+        $this->db->hSet($product_key, $product_id, $new_product);
+        $this->db->zadd($product_store_score_key, time(), $product_id);
+        $this->db->zadd($product_score_key, time(), $product_id);
+    });
         return $command_result ? true : false;
     }
 

@@ -15,7 +15,7 @@ use web\service\ProductService;
 class BaseModel
 {
 
-    public $db;
+    protected $db;
 
     const ADDR = "127.0.0.1";
 
@@ -60,7 +60,7 @@ class BaseModel
      */
     public function checkStoreAuth($uid)
     {
-        return $this->db->sIsMember(LoginService::LOGIN_STORE_CACHE, $uid);
+        return $this->db->sIsMember(LoginModel::LOGIN_STORE_CACHE, $uid);
     }
 
     /**
