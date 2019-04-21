@@ -30,7 +30,7 @@ func (self *HeartBeatTask) Run() error {
 			case redis.Message: //单个订阅subscribe
 				json.Unmarshal(v.Data, &node)
 				log.Println(node)
-				log.Printf("Receive node heartBeat: type[%s] - address[%s]\n", node["type"], node["address"])
+				log.Printf("Receive node heartBeat: type[%s] - address[%s] - address[%s] \n", node["type"], node["address"], node["port"])
 				self.ReportTable(node)
 			}
 		}
@@ -40,7 +40,7 @@ func (self *HeartBeatTask) Run() error {
 
 func (self *HeartBeatTask) ReportTable(node map[string]string) {
 	conn := self.pool.Get()
-	conn.Do("zadd", Bootstrap.HEARTBEAT_TABLE_KEY_TYPE+node["type"], time.Now().Unix(), node["address"])
+	conn.Do("zadd", Bootstrap.HEARTBEAT_TABLE_KEY_TYPE+node["type"], time.Now().Unix(), node["address"]+":"+node["port"])
 	conn.Flush()
 	defer conn.Close()
 }

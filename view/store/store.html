@@ -203,6 +203,29 @@
 
 <script>
     $(function () {
+        window.ip;
+
+        window.ws;
+
+        function getNode() {
+            $.ajax({
+                url: "http://www.node_manager.com:8823/getNode",
+                type: "post",
+                data: {user_type:"store", uid:localStorage.getItem("uid")},
+                success: function (data) {
+                    if(data.message == "success"){
+                        window.ws = new WebSocket("ws://"+data.data.node_ip+"?user_type=store&uid="+localStorage.getItem("uid"));
+                        setInterval(function(){
+                            ws.send("ping");
+                        },2500);
+                    }else{
+                        window.ip = null;
+                    }
+                }
+            });
+        }
+        getNode();
+
 
         $('.call').on('click', function () {
             $('.message-box').removeClass("dis-hide");

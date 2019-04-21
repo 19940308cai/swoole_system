@@ -8,9 +8,8 @@
 
 <a href="javascript:;" id="ping">点击我发送ping</a>
 
-
+<a href="javascript:;" id="xxx">点击我发送你好</a>
 <script>
-
     var ws = new WebSocket("ws://www.swoole_client.com:8088/ws");
 
     ws.onopen = function () {
@@ -24,14 +23,23 @@
     ws.onclose = function (evt) {
         console.log("WebSocketClosed!");
     };
-
     ws.onerror = function (evt) {
         console.log("WebSocketError!");
     };
 
-    document.getElementById("ping").onclick = function () {
+    setInterval(function(){
         ws.send("ping");
+    }, 2500);
+
+    document.getElementById("ping").onclick = function () {
+        ws.send("0x9");
     }
+    document.getElementById("xxx").onclick = function () {
+
+        ws.send("你好");
+    }
+
+
 
 </script>
 

@@ -66,11 +66,11 @@ if (isset($command_params['s'])) {
     }
     //工厂出类名称
     $websocketFactory = new \server\WebsocketFactoryClass();
-    $class_name = $websocketFactory->WebSocketFactoryClass($command_params['r']);
+    $class_name = $websocketFactory->WebSocketFactory($command_params['r']);
     if (null == $class_name) {
         die("run {$command_params['s']} {$command_params['r']} is faild! error...\n");
     }
-
+//    echo $class_name;
     if ($command_params['a'] == START) {
         start_server($command_params['s'], $allow_run_server[$command_params['s']]);
         $process = new swoole_process(function () use ($class_name, $allow_run_server, $command_params) {
@@ -80,12 +80,11 @@ if (isset($command_params['s'])) {
         }, true);
         $process->start();
 //        $read = $process->read();
+//        echo $read;
         swoole_process::wait();
         while (true) {
             if (file_exists(LOG_PATH . '/' . str_replace('\\', '_', $class_name) . '.run')) {
                 die("run {$command_params['s']} success...\n");
-            } else {
-                die("run {$command_params['s']} error...\n");
             }
         }
     }
