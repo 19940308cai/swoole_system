@@ -13,5 +13,8 @@ require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR
 require_once ROOT_PATH . DIRECTORY_SEPARATOR . "bootstrap" . DIRECTORY_SEPARATOR . "autoload.php";
 require_once VENDOR_PATH . DIRECTORY_SEPARATOR . "autoload.php";
 
+
+
+
 $app = new \core\App();
 $app->runMvc();

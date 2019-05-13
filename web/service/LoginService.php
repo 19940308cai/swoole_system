@@ -19,31 +19,21 @@ class LoginService
      * 注册
      * @param $user_type
      * @param $remote_addr
+     * @param $user_name
      * @return bool
      * @throws \Exception
      */
-    public function register($user_type, $remote_addr)
+    public function register($user_type, $user_name, $remote_addr)
     {
         $mlogin = new LoginModel();
-        switch ($user_type) {
-            case LoginModel::CUSTOMER:
-                $cache_key = LoginModel::LOGIN_CUSTOMER_CACHE;
-                break;
-            case LoginModel::PROVIDER:
-                $cache_key = LoginModel::LOGIN_PROVIDER_CACHE;
-                break;
-            case LoginModel::STORE:
-                $cache_key = LoginModel::LOGIN_STORE_CACHE;
-                break;
-        }
+        //构造用户ID
         $Aes = new Aes();
-        //$uid - 当做用户标示
         $uid = $Aes->AESEncryptRequest(LoginModel::AES_LEY,
             json_encode([
                 "ip" => $remote_addr,
                 "user_type" => $user_type], 320)
         );
-        return $mlogin->register($cache_key, $uid) ? $uid : false;
+        return $mlogin->register($user_type, $user_name, $uid) ? $uid : false;
     }
 
     /**

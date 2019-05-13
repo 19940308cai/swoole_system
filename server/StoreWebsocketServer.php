@@ -38,8 +38,14 @@ class StoreWebsocketServer extends WebsocketServer
     {
         $connection_info = $this->websocket->connection_info($request->fd);
         if (WEBSOCKET_STATUS_FRAME == $connection_info['websocket_status']) {
-            echo "websocket连接";
-            $this->login(ALL_STORE_UID, ALL_STORE_FD, STORE_FD_UID_MAP, STORE_UID_FD_MAP, $request->get['uid'], $request->fd);
+            $this->login(
+                ALL_STORE_UID,
+                ALL_STORE_FD,
+                STORE_FD_UID_MAP,
+                STORE_UID_FD_MAP,
+                $request->get['uid'],
+                $request->fd
+            );
         } else {
             echo "其它连接";
         }
@@ -49,8 +55,13 @@ class StoreWebsocketServer extends WebsocketServer
     {
         $connection_info = $this->websocket->connection_info($frame_id);
         if (WEBSOCKET_STATUS_FRAME == $connection_info['websocket_status']) {
-            echo "websocket清理";
-            $this->logout(ALL_STORE_UID, ALL_STORE_FD,STORE_FD_UID_MAP, STORE_UID_FD_MAP, $frame_id);
+            $this->logout(
+                ALL_STORE_UID,
+                ALL_STORE_FD,
+                STORE_UID_FD_MAP,
+                STORE_FD_UID_MAP,
+                $frame_id
+                );
         } else {
             echo "其它关闭";
         }
@@ -63,8 +74,6 @@ class StoreWebsocketServer extends WebsocketServer
         }
 
     }
-
-
 
 
     public function task($server, $task_id, $src_worker_id, $data)

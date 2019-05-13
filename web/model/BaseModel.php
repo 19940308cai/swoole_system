@@ -39,9 +39,9 @@ class BaseModel
      */
     protected function multiCommand($listen_keys=[], \Closure $callback)
     {
-//        foreach ($listen_keys as $listen) {
-//            $this->db->watch($listen);
-//        }
+        foreach ($listen_keys as $listen) {
+            $this->db->watch($listen);
+        }
         try {
             $this->db->multi(\Redis::PIPELINE);
             $callback();
@@ -54,38 +54,70 @@ class BaseModel
     }
 
     /**
-     * 检查门店用户是否合法
+     * 检查门店用户权限
      * @param $uid
      * @return bool
      */
     public function checkStoreAuth($uid)
     {
-        return $this->db->sIsMember(LoginModel::LOGIN_STORE_CACHE, $uid);
+        return $this->db->hExists(LoginModel::LOGIN_STORE_CACHE, $uid);
+    }
+
+    /**
+     * 获取门店员工信息
+     * @param $uid
+     * @return string
+     */
+    public function getStoreUserMessageByUid($uid)
+    {
+        return json_decode($this->db->hGet(LoginModel::LOGIN_STORE_CACHE, $uid), true);
     }
 
     /**
      * 获取门店产品总数
-     * @param $uid
+     * @param $store_id
      * @return int
      */
-    public function getStoreProductCount($uid)
+    public function getStoreProductCount($store_id)
     {
-        return $this->db->hLen(ProductModel::PRODUCT_CACHE_STORE . $uid);
+        return $this->db->hLen(ProductModel::PRODUCT_CACHE_STORE . $store_id);
+    }
+
+    /**
+     * 获取所有门店产品总数
+     * @return int
+     */
+    public function getAllStoreProductCount()
+    {
+        return $this->db->hLen(ProductModel::PRODUCT_CACHE_ALL);
     }
 
     /**
      * 获取门店产品 - 分页
-     * @param $uid
+     * @param $store_id
      * @param $offset
      * @param $limit
      * @return array
      */
-    public function getStoreProductSlice($uid, $offset, $limit)
+    public function getStoreProductSlice($store_id, $offset, $limit)
     {
-        $product_store_key = ProductModel::PRODUCT_CACHE_STORE_SCORE . $uid;
+        $product_store_key = ProductModel::PRODUCT_CACHE_STORE_SCORE . $store_id;
         $product_indexs = $this->db->zrange($product_store_key, $offset * $limit, $offset * $limit + $limit);
-        return $this->db->hMGet(ProductModel::PRODUCT_CACHE_STORE . $uid, $product_indexs);
+        return $this->db->hMGet(ProductModel::PRODUCT_CACHE_STORE . $store_id, $product_indexs);
     }
+
+    /**
+     * 从所有的门店产品中筛选出来东西
+     * @param $offset
+     * @param $limit
+     */
+    public function getAllStoreProductSlice($offset, $limit)
+    {
+        $product_store_key = ProductModel::PRODUCT_CACHE_STORE_ALL_SCORE;
+        $product_indexs = $this->db->zrange($product_store_key, $offset * $limit, $offset * $limit + $limit);
+        return $this->db->hMGet(ProductModel::PRODUCT_CACHE_ALL, $product_indexs);
+    }
+
 
     /**
      * @param $name

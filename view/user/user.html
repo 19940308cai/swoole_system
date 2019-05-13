@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-md-6 product-customer">
                         <div class="panel panel-default">
-                            <div class="panel-heading">商品客服</div>
+                            <div class="panel-heading">门店客服</div>
                             <div class="panel-body">
                                 <table class="table table-bordered">
                                     <!--无..-->
@@ -82,11 +82,8 @@
             <div class="panel-heading">商城板块</div>
             <div class="panel-body">
                 <table class="table">
-                    <tbody>
-                    <tr>
-                        <td>php权威指南</td>
-                        <td><a href="javascript:;" class="glyphicon glyphicon-plus icon-font-size"></a></td>
-                    </tr>
+                    <tbody id="product_items">
+
                     </tbody>
                 </table>
                 <div class="row text-center">
@@ -170,9 +167,60 @@
     $(function(){
 
 
+        function getAllProduct(page, limit, uid) {
+            // $('#product-tbody').html("");
+            var params = {page: page, limit: limit, uid: uid}
+            $.ajax({
+                url: "http://www.swoole_client.com:8088/product/getAllProduct",
+                type: "get",
+                data: params,
+                success: function (data) {
+                    if (data.code == 200) {
+                        if(parseInt(data.data.pager.count) <= 0){
+                            return false;
+                        }else{
+                            var html = "";
+                            for(product in data.data.products) {
+                                product_object = JSON.parse(data.data.products[product]);
+                                html += "                    <tr>\n" +
+                                    "                        <td>"+product_object.product_name+"</td>\n" +
+                                    "                        <td><a data-product-id="+product_object.product_id+" data-product-name="+product_object.product_name+" data-store-id="+product_object.store_index+" href=\"javascript:;\" class=\"glyphicon glyphicon-plus add-product icon-font-size\"></a></td>\n" +
+                                    "                    </tr>"
+                            }
+                            $('#product_items').append(html);
+                        }
+                    }
+                }
+            });
+        }
+        getAllProduct(1, 10, localStorage.getItem("uid"))
+
+        //TODO 获取用户购买的商品
+        getUserBuyProduct();
+
         // $('#dian').on('click',function(){
         //     $('#music').get(0).play();
         // })
+
+        $('#product_items').on('click', '.add-product', function(evt){
+            var params = {
+                store_id: $(evt.target).attr('data-store-id'),
+                product_id: $(evt.target).attr('data-product-id'),
+                uid: localStorage.getItem("uid"),
+            }
+            $.ajax({
+                url: "http://www.swoole_client.com:8088/product/buyProduct",
+                type: "post",
+                data: params,
+                success: function(data){
+                    if(200 != data.code){
+                        alert("购买产品失败...");
+                    }
+                }
+            });
+
+            // TODO 添加
+        })
 
 
         $('.call-customer').on('click',function(){

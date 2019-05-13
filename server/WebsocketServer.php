@@ -59,14 +59,14 @@ abstract class WebsocketServer
 
     }
 
-    public function login($all_uid, $all_fid, $fd_key, $uid_key, $uid, $fd)
+    public function login($all_uid_key, $all_fd_key, $fd_uid_map, $uid_fd_map, $uid, $fd)
     {
         try {
             $this->redis->multi(\Redis::PIPELINE);
-            $this->redis->hset($all_uid, $this->ip . ":" . $this->port . ":" . $uid, $fd);
-            $this->redis->hset($all_fid, $this->ip . ":" . $this->port . ":" . $fd, $uid);
-            $this->redis->hSet($uid_key, $uid, $fd);
-            $this->redis->hSet($fd_key, $fd, $uid);
+            $this->redis->hset($all_uid_key, $this->ip . ":" . $this->port . ":" . $uid, $fd);
+            $this->redis->hset($all_fd_key, $this->ip . ":" . $this->port . ":" . $fd, $uid);
+            $this->redis->hSet($fd_uid_map . $this->ip . ":" . $this->port, $uid, $fd);
+            $this->redis->hSet($uid_fd_map . $this->ip . ":" . $this->port, $fd, $uid);
             $this->redis->exec();
         } catch (\Exception $e) {
             $this->redis->discard();
@@ -74,15 +74,15 @@ abstract class WebsocketServer
         }
     }
 
-    public function logout($all_uid, $all_fid, $fd_key, $uid_key, $fd)
+    public function logout($all_uid_key, $all_fd_key, $fd_uid_map, $uid_fd_map, $fd)
     {
-        $uid = $this->redis->hget($all_fid, $this->ip . ":" . $this->port . ":" . $fd);
+        $uid = $this->redis->hget($all_fd_key, $this->ip . ":" . $this->port . ":" . $fd);
         try {
             $this->redis->multi(\Redis::PIPELINE);
-            $this->redis->hDel($all_uid, $this->ip . ":" . $this->port . ":" . $uid);
-            $this->redis->hDel($all_fid, $this->ip . ":" . $this->port . ":" . $fd);
-            $this->redis->hDel($fd_key, $fd);
-            $this->redis->hDel($uid_key, $uid);
+            $this->redis->hDel($all_uid_key, $this->ip . ":" . $this->port . ":" . $uid);
+            $this->redis->hDel($all_fd_key, $this->ip . ":" . $this->port . ":" . $fd);
+            $this->redis->hDel($fd_uid_map . $this->ip . ":" . $this->port, $fd);
+            $this->redis->hDel($uid_fd_map . $this->ip . ":" . $this->port, $uid);
             $this->redis->exec();
         } catch (\Exception $e) {
             $this->redis->discard();

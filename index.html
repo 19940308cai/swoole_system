@@ -7,6 +7,7 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="../../static/css/public.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
@@ -14,33 +15,50 @@
 </head>
 <body>
 
+
 <div class="container">
     <div class="row">
-        <div class="col-xs-6 col-md-4">
-            <a href="javascript:;" data-type="customer" class="thumbnail register">
-                <img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=31edd7959f3df8dcb23087c3ac7819ee/8b13632762d0f703d0ad4cbe08fa513d2697c5b1.jpg"
-                     alt="...">
-            </a>
-            <div class="col-md-12 text-center">
-                <span>我是客户</span>
-            </div>
-        </div>
-        <div class="col-xs-6 col-md-4">
-            <a href="javascript:;" data-type="provider" class="thumbnail register">
-                <img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=31edd7959f3df8dcb23087c3ac7819ee/8b13632762d0f703d0ad4cbe08fa513d2697c5b1.jpg"
-                     alt="...">
-            </a>
-            <div class="col-md-12 text-center">
-                <span>我是客服</span>
-            </div>
-        </div>
-        <div class="col-xs-6 col-md-4">
-            <a href="javascript:;" data-type="store" class="thumbnail register">
-                <img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=31edd7959f3df8dcb23087c3ac7819ee/8b13632762d0f703d0ad4cbe08fa513d2697c5b1.jpg"
-                     alt="...">
-            </a>
-            <div class="col-md-12 text-center">
-                <span>我是店员</span>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">角色注册</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="panel panel-default">
+                            <div class="panel-body form-horizontal">
+                                <div class="row">
+                                    <label class="col-md-2 control-label">角色:</label>
+                                    <div class="col-md-10">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="role" id="inlineRadio1"
+                                                   value="customer"> 用户
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="role" id="inlineRadio2"
+                                                   value="store"> 门店客服
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="role" id="inlineRadio3"
+                                                   value="provider"> 平台客服
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 20px;">
+                                    <label class="col-md-2 control-label name">用户名称:</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" name="user_name" id="name" placeholder="请输入名称">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="register-btn">确认注册</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -48,15 +66,25 @@
 
 <script>
     $(function () {
-        $('.register').on('click',function(){
-            var user_type = $(this).attr("data-type");
+        $('#myModal').modal({show: "show"});
+
+
+        $('#register-btn').on('click', function () {
+            var user_type = $("input[name='role']:checked").val();
+            if(!user_type){
+                return false;
+            }
+            var user_name = $("input[name='user_name']").val();
+            if(!user_name){
+                return false;
+            }
             $.ajax({
                 url: "http://www.swoole_client.com:8088/login/register",
                 type: "post",
-                data: {"user_type": user_type},
+                data: {"user_type": user_type, "user_name": user_name},
                 success: function (data) {
-                    if(data.code == 200){
-                        switch (user_type){
+                    if (data.code == 200) {
+                        switch (user_type) {
                             case "customer":
                                 window.location.href = "/view/user/user.html";
                                 break;
@@ -68,7 +96,7 @@
                                 break
                         }
                         localStorage.setItem("uid", data.data.uid);
-                    }else{
+                    } else {
                         alert("初始化角色失败....");
                     }
                 }
