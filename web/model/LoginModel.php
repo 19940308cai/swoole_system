@@ -98,5 +98,22 @@ class LoginModel extends BaseModel
         return true;
     }
 
+    public function getStoreProvider($store_id)
+    {
+        $stores = $this->db->hGetAll(self::LOGIN_STORE_CACHE);
+        if (!$stores) {
+            return [];
+        } else {
+            $tmp = [];
+            foreach ($stores as $uid => $store_msg) {
+                $store_msg = json_decode($store_msg, true);
+                if ($store_id == $store_msg['store_index']) {
+                    array_push($tmp, $store_msg);
+                }
+            }
+            return $tmp;
+        }
+    }
+
 
 }

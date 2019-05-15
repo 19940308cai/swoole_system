@@ -39,12 +39,30 @@ class ProductModel extends BaseModel
      */
     public function buyProduct($product_id, $store_id, $uid)
     {
+        /**
+         * 门店纬度: 产品 - uid映射
+         * 用户纬度: 产品 - store_id映射
+         */
         $store_user_product_key = self::PRODUCT_CACHE_USER_STORE . $store_id;
         $user_store_product_key = UserModel::PRODUCT_CACHE_USER_STORE . $uid;
-        $command_result = $this->multiCommand([],function() use ($store_user_product_key, $user_store_product_key, $product_id, $uid, $store_id){
+        //检查是否重复购买
+        if ($this->db->hExists($user_store_product_key, $product_id)) {
+            throw new \Exception("不能重复购买...");
+        }
+        $this->lock(implode("-", [
+            $product_id,
+            $store_id,
+            $uid
+        ]));
+        $command_result = $this->multiCommand([], function () use ($store_user_product_key, $user_store_product_key, $product_id, $uid, $store_id) {
             $this->db->hSet($store_user_product_key, $product_id, $uid);
             $this->db->hSet($user_store_product_key, $product_id, $store_id);
         });
+        $this->unlock(implode("-", [
+            $product_id,
+            $store_id,
+            $uid
+        ]));
         return $command_result ? true : false;
     }
 
@@ -68,6 +86,7 @@ class ProductModel extends BaseModel
         if ($this->db->sIsMember($product_name_key, $product_name)) {
             throw new \Exception("不允许重复提交...");
         }
+        //计算产品主键
         $primary_key = $this->db->incr($product_primary_key);
         $product = json_encode(["product_id" => $primary_key, "product_name" => $product_name, "product_num" => $product_num, "store_index" => $store_user['store_index'], "creator" => $store_user['uid']], 320);
         $command_result = $this->multiCommand([
@@ -99,7 +118,11 @@ class ProductModel extends BaseModel
         $product_name_key = self::PRODUCT_NAME_CACHE_ALL . $store_user['store_index'];
         $product_store_score_key = self::PRODUCT_CACHE_STORE_SCORE . $store_user['store_index'];
         $product_score_key = self::PRODUCT_CACHE_STORE_ALL_SCORE;
-
+        $this->lock(implode("-", [
+            $product_id,
+            $store_user['store_index'],
+            $store_user['uid']
+        ]));
         $new_product = json_encode(["product_name" => $product_name, "product_num" => $product_num, "store_index" => $store_user['store_index'], "uid" => $store_user['uid']], 320);
         $old_product = json_decode($this->db->hGet($product_key, $product_id), true);
         if (!$old_product) {
@@ -115,6 +138,11 @@ class ProductModel extends BaseModel
             $this->db->zadd($product_store_score_key, time(), $product_id);
             $this->db->zadd($product_score_key, time(), $product_id);
         });
+        $this->unlock(implode("-", [
+            $product_id,
+            $store_user['store_index'],
+            $store_user['uid']
+        ]));
         return $command_result ? true : false;
     }
 

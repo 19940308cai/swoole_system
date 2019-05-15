@@ -64,6 +64,16 @@ class BaseModel
     }
 
     /**
+     * 检查用户权限
+     * @param $uid
+     * @return bool
+     */
+    public function checkCustomerAuth($uid)
+    {
+        return $this->db->hExists(LoginModel::LOGIN_CUSTOMER_CACHE, $uid);
+    }
+
+    /**
      * 获取门店员工信息
      * @param $uid
      * @return string
@@ -116,6 +126,18 @@ class BaseModel
         $product_store_key = ProductModel::PRODUCT_CACHE_STORE_ALL_SCORE;
         $product_indexs = $this->db->zrange($product_store_key, $offset * $limit, $offset * $limit + $limit);
         return $this->db->hMGet(ProductModel::PRODUCT_CACHE_ALL, $product_indexs);
+    }
+
+
+    public function lock($lock_key, $e = 10)
+    {
+        $this->db->setnx($lock_key, "lock");
+        $this->db->expire($lock_key, $e);
+    }
+
+    public function unlock($lock_key)
+    {
+        $this->db->del($lock_key);
     }
 
 

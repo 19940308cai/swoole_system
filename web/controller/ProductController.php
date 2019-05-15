@@ -60,8 +60,12 @@ class ProductController extends BaseController
         $product_id = $this->request->get("product_id");
         $store_id = $this->request->get("store_id");
         $sProduct = new ProductService();
-        $result = $sProduct->buyProduct($product_id, $store_id, $this->uid);
-        return $result ? $this->response->json(200, self::$success, []) : $this->response->json(500, self::$success, "购买商品失败...");
+        try{
+            $result = $sProduct->buyProduct($product_id, $store_id, $this->uid);
+            return $result ? $this->response->json(200, self::$success, []) : $this->response->json(500, self::$success, "购买商品失败...");
+        }catch (\Exception $e){
+            return $this->response->json(500, self::$error, $e->getMessage());
+        }
     }
 
     /**
@@ -76,5 +80,6 @@ class ProductController extends BaseController
         $products = $sProduct->getAllProduct($page, $limit);
         return $this->response->json(200, self::$success, $products);
     }
+
 
 }

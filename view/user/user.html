@@ -18,16 +18,19 @@
             height: 350px;
             overflow: hidden;
         }
+
         #message-box > div {
             /* 子容器比父容器的宽度多 17 px, 经测正好是滚动条的默认宽度 */
             height: 350px;
             line-height: 20px;
             overflow-y: scroll;
         }
-        .model-hide{
+
+        .model-hide {
             display: none;
         }
-        .icon-font-size{
+
+        .icon-font-size {
             font-size: 12px;
         }
 
@@ -46,11 +49,8 @@
                             <div class="panel-heading">已购买商品</div>
                             <div class="panel-body">
                                 <table class="table table-bordered">
-                                    <tbody>
-                                    <tr>
-                                        <td>php权威指南</td>
-                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="javascript:;" >客服(100)</a></td>
-                                    </tr>
+                                    <tbody id="buyed-product">
+
                                     </tbody>
                                 </table>
                             </div>
@@ -61,13 +61,8 @@
                             <div class="panel-heading">门店客服</div>
                             <div class="panel-body">
                                 <table class="table table-bordered">
-                                    <!--无..-->
-                                    <tbody>
-                                    <tr>
-                                        <td>蔡江</td>
-                                        <td width="30%;"><i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="javascript:;" class="call-customer">消息(1)</a></td>
-                                    </tr>
-                                    </tbody>
+                                    <i id="qx">点击"联系客服"找客服噢...</i>
+                                    <tbody id="kf_items"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -119,7 +114,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="alert alert-info alert-dismissible" role="alert">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
                             <strong>Tips:</strong> <br>1.&nbsp;&nbsp;按Enter键发送消息<br>2.&nbsp;&nbsp;连续按两次Esc键推出聊天窗口
                         </div>
                     </div>
@@ -129,15 +125,20 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">聊天框</div>
                             <div class="panel-body" style="padding: 2px;">
-                                <textarea class="form-control" id="textarea_warp" rows="17" placeholder="按Enter发送"></textarea>
+                                <textarea class="form-control" id="textarea_warp" rows="17"
+                                          placeholder="按Enter发送"></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="panel panel-default">
-                            <div class="panel-heading">聊天记录</div>
+                            <div class="panel-heading" id="msg-items">聊天记录</div>
                             <div class="panel-body" id="message-box">
-                                <div>
+                                <div id="message-items">
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
+                                    <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
                                     <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
                                     <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
                                     <p class="message-items">这是一段测试文字，文本超出部分滚动显示，滚动条隐藏.</p>
@@ -157,18 +158,20 @@
         </div>
     </div>
 
-    <video id="music"  preload="metadata">
+    <input type="hidden" name="to_user_id" value="" />
+    <input type="hidden" name="from_user_id" value="" />
+    <input type="hidden" name="to_user_name" value="" />
+
+    <video id="music" preload="metadata">
         <source src="../../static/music/message-music.mp3">
     </video>
-
 </div>
 <script>
 
-    $(function(){
+    $(function () {
 
 
         function getAllProduct(page, limit, uid) {
-            // $('#product-tbody').html("");
             var params = {page: page, limit: limit, uid: uid}
             $.ajax({
                 url: "http://www.swoole_client.com:8088/product/getAllProduct",
@@ -176,15 +179,15 @@
                 data: params,
                 success: function (data) {
                     if (data.code == 200) {
-                        if(parseInt(data.data.pager.count) <= 0){
+                        if (parseInt(data.data.pager.count) <= 0) {
                             return false;
-                        }else{
+                        } else {
                             var html = "";
-                            for(product in data.data.products) {
+                            for (product in data.data.products) {
                                 product_object = JSON.parse(data.data.products[product]);
                                 html += "                    <tr>\n" +
-                                    "                        <td>"+product_object.product_name+"</td>\n" +
-                                    "                        <td><a data-product-id="+product_object.product_id+" data-product-name="+product_object.product_name+" data-store-id="+product_object.store_index+" href=\"javascript:;\" class=\"glyphicon glyphicon-plus add-product icon-font-size\"></a></td>\n" +
+                                    "                        <td>" + product_object.product_name + "</td>\n" +
+                                    "                        <td><a data-product-num=" + product_object.product_num + " data-product-id=" + product_object.product_id + " data-product-name=" + product_object.product_name + " data-store-id=" + product_object.store_index + " href=\"javascript:;\" class=\"glyphicon glyphicon-plus add-product icon-font-size\"></a></td>\n" +
                                     "                    </tr>"
                             }
                             $('#product_items').append(html);
@@ -193,67 +196,121 @@
                 }
             });
         }
+
         getAllProduct(1, 10, localStorage.getItem("uid"))
 
-        //TODO 获取用户购买的商品
+        function getUserBuyProduct() {
+            $.ajax({
+                url: "http://www.swoole_client.com:8088/UserProduct/getUserProducts",
+                type: "post",
+                data: {uid: localStorage.getItem("uid")},
+                success: function (data) {
+                    if (data.data.length > 0) {
+                        $('#buyed-product').html("");
+                        var html = "";
+                        for (var i = 0; i < data.data.length; i++) {
+                            html += '                                    <tr>\n' +
+                                '                                        <td>' + data.data[i].product_name + '</td>\n' +
+                                '                                        <td width="30%;"><i class="glyphicon glyphicon-user"></i>&nbsp;<a href="javascript:;" data-product-name="' + data.data[i].product_name + '" data-product-id="' + data.data[i].product_id + '" data-store-id="' + data.data[i].store_index + '" class="lxkf" >联系客服</a></td>\n' +
+                                '                                    </tr>';
+                        }
+                        $('#buyed-product').append(html);
+                    }
+                }
+            });
+        }
+
         getUserBuyProduct();
 
-        // $('#dian').on('click',function(){
-        //     $('#music').get(0).play();
-        // })
+        $('#buyed-product').on('click', '.lxkf', function (evt) {
+            var store_id = $(evt.target).attr('data-store-id');
+            $.ajax({
+                url: "http://www.swoole_client.com:8088/store/getStoreProvider",
+                type: "post",
+                data: {store_id: store_id, uid: localStorage.getItem("uid")},
+                success: function (data) {
+                    $('#qx').html('');
+                    $('#kf_items').html('');
+                    if (data.code == 200) {
+                        var html = "";
+                        for (var i = 0; i < data.data.length; i++) {
+                            html += '<tr>\n' +
+                                '                        <td>' + data.data[i].user_name + '</td>\n' +
+                                '                        <td width="30%;"><i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="javascript:;" data-to-user-name="'+data.data[i].user_name+'" data-to-uid="' + data.data[i].uid + '" data-other-id="' + data.data[i].store_index + '" class="call-customer">消息(0)</a></td> \n' +
+                                '                    </tr>';
+                        }
+                        $('#kf_items').append(html);
+                    } else {
+                        $('#kf_items').html("该门店没有找到客服...");
+                    }
+                }
+            });
+        })
 
-        $('#product_items').on('click', '.add-product', function(evt){
+        $('#kf_items').on('click', '.call-customer', function (evt) {
+            $('.message-model').removeClass('model-hide');
+            $('.order-model').addClass('model-hide');
+            $('.product-model').addClass('model-hide');
+            $("input[name='to_user_name']").val("");
+            $("input[name='to_user_id']").val("");
+            $("input[name='from_user_id']").val("");
+            var to_user_name = $(evt.target).attr("data-to-user-name");
+            var to_user_uid = $(evt.target).attr("data-to-uid");
+            var from_user_id = localStorage.getItem("uid");
+            $("input[name='to_user_name']").val(to_user_name)
+            $("input[name='to_user_id']").val(to_user_uid)
+            $("input[name='from_user_id']").val(from_user_id)
+            $('#msg-items').html("与【"+to_user_name+"】的聊天记录")
+        });
+
+        $('#product_items').on('click', '.add-product', function (evt) {
             var params = {
                 store_id: $(evt.target).attr('data-store-id'),
                 product_id: $(evt.target).attr('data-product-id'),
-                uid: localStorage.getItem("uid"),
+                uid: localStorage.getItem("uid")
             }
             $.ajax({
                 url: "http://www.swoole_client.com:8088/product/buyProduct",
                 type: "post",
                 data: params,
-                success: function(data){
-                    if(200 != data.code){
-                        alert("购买产品失败...");
+                success: function (data) {
+                    if (200 != data.code) {
+                        alert(data.data);
+                    } else {
+                        alert("购买产品成功...");
+                        getUserBuyProduct();
                     }
                 }
             });
-
-            // TODO 添加
         })
 
-
-        $('.call-customer').on('click',function(){
-            $('.message-model').removeClass('model-hide');
-            $('.order-model').addClass('model-hide');
-            $('.product-model').addClass('model-hide');
-        });
-
         var t_esc = 0;
-        $("body").keyup(function(event){
-            if($('.message-model').hasClass('model-hide')) {
+        $("body").keyup(function (event) {
+            if ($('.message-model').hasClass('model-hide')) {
                 return false;
             }
-            if(event.keyCode == 13){
+            if (event.keyCode == 13) {
                 $('#textarea_warp').val("");
                 //TODO 发送消息
             }
-            if(event.keyCode == 27){
+            if (event.keyCode == 27) {
                 t_esc++;
-            }else{
-                if(t_esc > 0){
+            } else {
+                if (t_esc > 0) {
                     t_esc = 0;
                 }
             }
-            if(t_esc == 2){
+            if (t_esc == 2) {
                 t_esc = 0;
                 $('.message-model').addClass('model-hide');
                 $('.order-model').removeClass('model-hide');
                 $('.product-model').removeClass('model-hide');
+                $("input[name='to_user_name']").val("");
+                $("input[name='to_user_id']").val("");
+                $("input[name='from_user_id']").val("");
             }
         });
     });
-
 
 
 </script>
