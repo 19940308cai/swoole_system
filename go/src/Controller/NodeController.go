@@ -51,7 +51,7 @@ func (self *NodeController) _checkAuth(request *http.Request) bool {
 		return false
 	} else {
 		conn := Lib.Pool.Get()
-		isset, _ := redis.Bool(conn.Do("SISMEMBER", cache_key, uid))
+		isset, _ := redis.Bool(conn.Do("HEXISTS", cache_key, uid))
 		conn.Close()
 		return isset
 	}

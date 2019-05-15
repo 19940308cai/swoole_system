@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
+    <script src="../../static/js/base.js"></script>
     <style>
         #message-box {
             /* 父容器设置宽度, 并超出部分不显示 */
@@ -158,9 +159,9 @@
         </div>
     </div>
 
-    <input type="hidden" name="to_user_id" value="" />
-    <input type="hidden" name="from_user_id" value="" />
-    <input type="hidden" name="to_user_name" value="" />
+    <input type="hidden" name="to_user_id" value=""/>
+    <input type="hidden" name="from_user_id" value=""/>
+    <input type="hidden" name="to_user_name" value=""/>
 
     <video id="music" preload="metadata">
         <source src="../../static/music/message-music.mp3">
@@ -169,8 +170,23 @@
 <script>
 
     $(function () {
+        getNode("customer", localStorage.getItem(CUSTOMER_UID)).then(function(){
+            window.ws.onopen = function () {
+                console.log("websocket connnect success...");
+            };
 
+            window.ws.onclose = function (evt) {
+                console.log("websocket connnect close...");
+            };
 
+            window.ws.onerror = function (evt) {
+                console.log("websocket error...");
+            };
+
+            window.ws.onmessage = function (evt) {
+                console.log("收到信息:", evt.data)
+            };
+        });
         function getAllProduct(page, limit, uid) {
             var params = {page: page, limit: limit, uid: uid}
             $.ajax({
@@ -197,13 +213,13 @@
             });
         }
 
-        getAllProduct(1, 10, localStorage.getItem("uid"))
+        getAllProduct(1, 10, localStorage.getItem(CUSTOMER_UID))
 
         function getUserBuyProduct() {
             $.ajax({
                 url: "http://www.swoole_client.com:8088/UserProduct/getUserProducts",
                 type: "post",
-                data: {uid: localStorage.getItem("uid")},
+                data: {uid: localStorage.getItem(CUSTOMER_UID)},
                 success: function (data) {
                     if (data.data.length > 0) {
                         $('#buyed-product').html("");
@@ -227,7 +243,7 @@
             $.ajax({
                 url: "http://www.swoole_client.com:8088/store/getStoreProvider",
                 type: "post",
-                data: {store_id: store_id, uid: localStorage.getItem("uid")},
+                data: {store_id: store_id, uid: localStorage.getItem(CUSTOMER_UID)},
                 success: function (data) {
                     $('#qx').html('');
                     $('#kf_items').html('');
@@ -236,7 +252,7 @@
                         for (var i = 0; i < data.data.length; i++) {
                             html += '<tr>\n' +
                                 '                        <td>' + data.data[i].user_name + '</td>\n' +
-                                '                        <td width="30%;"><i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="javascript:;" data-to-user-name="'+data.data[i].user_name+'" data-to-uid="' + data.data[i].uid + '" data-other-id="' + data.data[i].store_index + '" class="call-customer">消息(0)</a></td> \n' +
+                                '                        <td width="30%;"><i class="glyphicon glyphicon-envelope"></i>&nbsp;<a href="javascript:;" data-to-user-name="' + data.data[i].user_name + '" data-to-uid="' + data.data[i].uid + '" data-other-id="' + data.data[i].store_index + '" class="call-customer">消息(0)</a></td> \n' +
                                 '                    </tr>';
                         }
                         $('#kf_items').append(html);
@@ -256,18 +272,18 @@
             $("input[name='from_user_id']").val("");
             var to_user_name = $(evt.target).attr("data-to-user-name");
             var to_user_uid = $(evt.target).attr("data-to-uid");
-            var from_user_id = localStorage.getItem("uid");
+            var from_user_id = localStorage.getItem(CUSTOMER_UID);
             $("input[name='to_user_name']").val(to_user_name)
             $("input[name='to_user_id']").val(to_user_uid)
             $("input[name='from_user_id']").val(from_user_id)
-            $('#msg-items').html("与【"+to_user_name+"】的聊天记录")
+            $('#msg-items').html("与【" + to_user_name + "】的聊天记录")
         });
 
         $('#product_items').on('click', '.add-product', function (evt) {
             var params = {
                 store_id: $(evt.target).attr('data-store-id'),
                 product_id: $(evt.target).attr('data-product-id'),
-                uid: localStorage.getItem("uid")
+                uid: localStorage.getItem(CUSTOMER_UID)
             }
             $.ajax({
                 url: "http://www.swoole_client.com:8088/product/buyProduct",
@@ -284,14 +300,41 @@
             });
         })
 
+        function talk() {
+            if (null == window.ip) {
+                console.log("not found ip")
+                return false;
+            }
+            var to_user_name = $("input[name='to_user_name']").val();
+            var to_user_id = $("input[name='to_user_id']").val();
+            var from_user_id = $("input[name='from_user_id']").val();
+            if (!to_user_name || !to_user_id || !from_user_id) {
+                console.log("params error")
+                return false;
+            }
+            var message = $('#textarea_warp').val();
+            if (!message) {
+                console.log("content is empty")
+                return false;
+            }
+            $.ajax({
+                url: "http://" + window.ip,
+                type: "post",
+                data: {action: "send", from_user_id: from_user_id, to_user_id: to_user_id, message: message},
+                success: function (data) {
+                    console.log("talk response: ", data)
+                }
+            });
+        }
+
         var t_esc = 0;
         $("body").keyup(function (event) {
             if ($('.message-model').hasClass('model-hide')) {
                 return false;
             }
             if (event.keyCode == 13) {
+                talk()
                 $('#textarea_warp').val("");
-                //TODO 发送消息
             }
             if (event.keyCode == 27) {
                 t_esc++;

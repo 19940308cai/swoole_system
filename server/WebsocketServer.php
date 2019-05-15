@@ -40,12 +40,14 @@ abstract class WebsocketServer
             'log_file' => LOG_PATH . '/' . $this->file_name . '.log',
             'pid_file' => PID_PATH . '/' . $this->file_name . '.pid',
         ]);
+        //connect success callback
         $this->websocket->on("open", [$this, "open"]);
         $this->websocket->on("message", [$this, "message"]);
-//        $this->websocket->on("request", [$this, "request"]);
+        $this->websocket->on("request", [$this, "request"]);
         $this->websocket->on("task", [$this, "task"]);
         $this->websocket->on("finish", [$this, "finish"]);
         $this->websocket->on("close", [$this, "close"]);
+        //app start callback
         $this->websocket->on("Start", [$this, "start"]);
         $this->websocket->on("WorkerStart", [$this, "workerStart"]);
     }
@@ -65,8 +67,8 @@ abstract class WebsocketServer
             $this->redis->multi(\Redis::PIPELINE);
             $this->redis->hset($all_uid_key, $this->ip . ":" . $this->port . ":" . $uid, $fd);
             $this->redis->hset($all_fd_key, $this->ip . ":" . $this->port . ":" . $fd, $uid);
-            $this->redis->hSet($fd_uid_map . $this->ip . ":" . $this->port, $uid, $fd);
-            $this->redis->hSet($uid_fd_map . $this->ip . ":" . $this->port, $fd, $uid);
+            $this->redis->hSet($fd_uid_map . $this->ip . ":" . $this->port, $fd, $uid);
+            $this->redis->hSet($uid_fd_map . $this->ip . ":" . $this->port, $uid, $fd);
             $this->redis->exec();
         } catch (\Exception $e) {
             $this->redis->discard();
@@ -77,6 +79,10 @@ abstract class WebsocketServer
     public function logout($all_uid_key, $all_fd_key, $fd_uid_map, $uid_fd_map, $fd)
     {
         $uid = $this->redis->hget($all_fd_key, $this->ip . ":" . $this->port . ":" . $fd);
+        echo <<<HTML
+logout key {$all_fd_key}
+row key $this->ip:$this->port:$fd;
+HTML;
         try {
             $this->redis->multi(\Redis::PIPELINE);
             $this->redis->hDel($all_uid_key, $this->ip . ":" . $this->port . ":" . $uid);
@@ -96,9 +102,28 @@ abstract class WebsocketServer
         if (false === $server->taskworker) {
             echo "task start\n";
         } else {
-
             echo "worker start\n";
         }
+    }
+
+    public function request($request, $response)
+    {
+        include_once VENDOR_PATH.DIRECTORY_SEPARATOR."autoload.php";
+        $response->header("Access-Control-Allow-Origin", "*");
+        $response->header("Content-Type", "application/json");
+        $msg = [
+            "msg" => ""
+        ];
+        if('POST' != $request->server['request_method']) {
+            $msg["msg"] = "not allow get method...";
+            $response->end(json_encode($msg, 320));
+        }
+        if(!isset($request->post['action'])) {
+            $msg["msg"] = "not found action...";
+            $response->end(json_encode($msg, 320));
+        }
+        $msg = $this->OnRequest($request, $response, $msg);
+        $response->end(json_encode($msg, 320));
     }
 
     public function open($server, $request)

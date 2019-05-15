@@ -30,6 +30,7 @@ class BaseController
     {
         $this->request = $request;
         $this->response = $response;
+        //必须携带对象uid
         $this->uid = $this->request->get("uid");
         if (!in_array($this->request->getRequestUri(), self::$allow_uri)) {
             if (null === $this->uid) {
